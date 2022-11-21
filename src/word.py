@@ -18,8 +18,8 @@ class Word:
 
     def examples(self, limit: int = 1) -> List[str]:
         """
-        Returns all results matching the conditions, limited if necessary by limit keyword. If limit is less or equal
-        zero, then all results will be given
+        Returns all results matching the predefined conditions, limited if necessary by limit keyword. If limit is less
+        or equal zero, then all results will be given
         :param limit: size of the resulting list, if <=0 then all results
         :return: list of string results
         """
@@ -30,8 +30,21 @@ class Word:
             return results
         return results[:limit]
 
-    def letter_at_index_is(self, index: int, letter: str):
-        pass
+    def letter_at_index_is(self, index: int, letter: str) -> None:
+        """
+        Adds condition, that search word is contains given letter on given index. Index starts with 0 (not 1).
+        Index cant be smaller, than 0 or bigger, than length of the word. Letter should be a string with length=1
+        :param index: index of letter in range (0, len(word))
+        :param letter: exactly one letter
+        :return: None
+        :raises ValueError if index is wrong or length of tht letter bigger than 1
+        """
+        if index < 0 or index > self.length - 1:
+            raise ValueError(f'Index should be in range (0,{self.length})')
+        if len(letter) != 1:
+            raise ValueError(f'Letter should have length 1, got {len(letter)}')
+        letter = letter.lower()
+        self.conditions.append(lambda w: w[index] == letter)
 
     def starts_with(self, prefix: str) -> None:
         """
@@ -60,6 +73,9 @@ class Word:
             return None
         postfix = postfix.lower()
         self.conditions.append(lambda w: w.endswith(postfix))
+
+    def contains(self, letter: str) -> None:
+        pass
 
     def examples_count(self) -> int:
         pass

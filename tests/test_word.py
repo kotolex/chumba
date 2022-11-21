@@ -116,6 +116,55 @@ class TestWord(TestCase):
         result = word.examples(5)
         self.assertEqual(['агнец'], result)
 
+    def test_letter_at_index_is_raises_when_small_index(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.letter_at_index_is(-1, '2')
+        self.assertEqual(str(e.exception), "Index should be in range (0,12)")
+
+    def test_letter_at_index_is_raises_when_big_index(self):
+        word = Word(5)
+        with self.assertRaises(ValueError) as e:
+            word.letter_at_index_is(5, '2')
+        self.assertEqual(str(e.exception), "Index should be in range (0,5)")
+
+    def test_letter_at_index_is_raises_when_letter_is_not_single(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.letter_at_index_is(3, '22')
+        self.assertEqual(str(e.exception), "Letter should have length 1, got 2")
+
+    def test_letter_at_index_is_raises_when_letter_is_empty(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.letter_at_index_is(3, '')
+        self.assertEqual(str(e.exception), "Letter should have length 1, got 0")
+
+    def test_letter_at_index_is(self):
+        params = (
+            (['авизо', 'аврал', 'автол'], 1, 'В'),
+            (['авизо', 'аврал', 'автол'], 1, 'в'),
+            (['аббат', 'абзац', 'аборт', 'абрек', 'абрис'], 1, 'б'),
+            (['ёрник', 'абрек'], 4, 'к'),
+            ([], 1, 'w'),
+        )
+        for expected, index, letter in params:
+            with self.subTest(f'Test letter at index {index} is {letter}'):
+                word = Word(5)
+                word.cached = DATA
+                word.letter_at_index_is(index, letter)
+                result = word.examples(5)
+                self.assertEqual(expected, result)
+
+    def test_three_conditions(self):
+        word = Word(5)
+        word.cached = DATA
+        word.starts_with('АГ')
+        word.ends_with('ец')
+        word.letter_at_index_is(2, 'н')
+        result = word.examples(5)
+        self.assertEqual(['агнец'], result)
+
 
 if __name__ == '__main__':
     main()
