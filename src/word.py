@@ -37,7 +37,7 @@ class Word:
         :param index: index of letter in range (0, len(word))
         :param letter: exactly one letter
         :return: None
-        :raises ValueError if index is wrong or length of tht letter bigger than 1
+        :raises ValueError if index is wrong or length of the letter bigger than 1
         """
         if index < 0 or index > self.length - 1:
             raise ValueError(f'Index should be in range (0,{self.length})')
@@ -75,12 +75,21 @@ class Word:
         self.conditions.append(lambda w: w.endswith(postfix))
 
     def contains(self, letter: str) -> None:
-        pass
+        """
+        Adds condition, that search word contains given letter. Letter should be a string with length=1
+        :param letter: exactly one letter
+        :return: None
+        :raises ValueError if length of the letter not equal 1
+        """
+        if len(letter) != 1:
+            raise ValueError(f'Letter should have length 1, got {len(letter)}')
+        letter = letter.lower()
+        self.conditions.append(lambda w: letter in w)
 
     def examples_count(self) -> int:
         pass
 
-    def _read_all(self, lang: str):
+    def _read_all(self, lang: str) -> None:
         file_name = f'./data/words_{lang}.txt'
         with open(file_name, encoding='utf-8') as file:
             self.cached = [e.rstrip() for e in file]

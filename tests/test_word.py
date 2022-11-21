@@ -165,6 +165,43 @@ class TestWord(TestCase):
         result = word.examples(5)
         self.assertEqual(['агнец'], result)
 
+    def test_contains_raises_if_letter_is_empty(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.contains('')
+        self.assertEqual(str(e.exception), "Letter should have length 1, got 0")
+
+    def test_contains_is_raises_when_letter_is_not_single(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.contains('22')
+        self.assertEqual(str(e.exception), "Letter should have length 1, got 2")
+
+    def test_contains(self):
+        params = (
+            (['ёмкий', 'ёрник', 'абрис', 'авизо'], 'и'),
+            (['ёкать', 'аббат', 'аборт', 'автол', 'агент'], 'т'),
+            (['ёкать', 'аббат', 'абзац', 'аборт', 'абрек'], 'а'),
+            ([], 'w'),
+        )
+        for expected, letter in params:
+            with self.subTest(f'Test contains {letter}'):
+                word = Word(5)
+                word.cached = DATA
+                word.contains(letter)
+                result = word.examples(5)
+                self.assertEqual(expected, result)
+
+    def test_four_conditions(self):
+        word = Word(5)
+        word.cached = DATA
+        word.starts_with('ё')
+        word.ends_with('ий')
+        word.letter_at_index_is(2, 'к')
+        word.contains('м')
+        result = word.examples(5)
+        self.assertEqual(['ёмкий'], result)
+
 
 if __name__ == '__main__':
     main()
