@@ -14,6 +14,7 @@ class Word:
         self.length = length
         self.dictionary = Word.RU if ru else Word.EN
         self.cached = []
+        self.conditions = [lambda w: len(w) == self.length]
 
     def examples(self, limit: int = 1) -> List[str]:
         """
@@ -24,16 +25,41 @@ class Word:
         """
         if not self.cached:
             self._read_all(self.dictionary)
-        return [e for e in self.cached if self.length == len(e)][:limit]
+        results = self._apply_all_conditions()
+        if limit <= 0:
+            return results
+        return results[:limit]
 
     def letter_at_index_is(self, index: int, letter: str):
         pass
 
-    def starts_with(self, prefix: str):
-        pass
+    def starts_with(self, prefix: str) -> None:
+        """
+        Adds condition, that search word is starts with prefix. Prefix cant be bigger, than word itself
+        :param prefix: starting part of search word
+        :return: None
+        :raises ValueError if length of the prefix is bigger than length of the word
+        """
+        if len(prefix) > self.length:
+            raise ValueError(f'Prefix {prefix} is bigger than word length({self.length})')
+        if not prefix:
+            return None
+        prefix = prefix.lower()
+        self.conditions.append(lambda w: w.startswith(prefix))
 
     def ends_with(self, postfix: str):
-        pass
+        """
+        Adds condition, that search word is ends with postfix. Postfix cant be bigger, than word itself
+        :param postfix: ending part of the search word
+        :return: None
+        :raises ValueError if length of the postfix is bigger than length of the word
+        """
+        if len(postfix) > self.length:
+            raise ValueError(f'Postfix {postfix} is bigger than word length({self.length})')
+        if not postfix:
+            return None
+        postfix = postfix.lower()
+        self.conditions.append(lambda w: w.endswith(postfix))
 
     def examples_count(self) -> int:
         pass
@@ -43,7 +69,5 @@ class Word:
         with open(file_name, encoding='utf-8') as file:
             self.cached = [e.rstrip() for e in file]
 
-
-if __name__ == '__main__':
-    word = Word(5)
-    print(word.examples(15))
+    def _apply_all_conditions(self) -> List[str]:
+        return [e for e in self.cached if all(condition(e) for condition in self.conditions)]
