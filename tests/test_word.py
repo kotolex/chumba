@@ -9,15 +9,15 @@ DATA = ['ёкать', 'ёмкий', 'ёрник', 'аббат', 'абзац', '�
 class TestWord(TestCase):
     def test_simple_object(self):
         word = Word(10)
-        self.assertEqual(word.cached, [])
-        self.assertEqual(word.length, 10)
-        self.assertEqual(word.dictionary, Word.RU)
+        self.assertEqual(word._cached, [])
+        self.assertEqual(word._length, 10)
+        self.assertEqual(word._dictionary, Word.RU)
 
     def test_en_dict(self):
         word = Word(10, False)
-        self.assertEqual(word.cached, [])
-        self.assertEqual(word.length, 10)
-        self.assertEqual(word.dictionary, Word.EN)
+        self.assertEqual(word._cached, [])
+        self.assertEqual(word._length, 10)
+        self.assertEqual(word._dictionary, Word.EN)
 
     def test_limit(self):
         params = (
@@ -31,7 +31,7 @@ class TestWord(TestCase):
         for expected, limit in params:
             with self.subTest(f'Test limit {limit}'):
                 word = Word(5)
-                word.cached = DATA
+                word._cached = DATA
                 result = word.examples(limit)
                 self.assertEqual(expected, result)
 
@@ -43,15 +43,15 @@ class TestWord(TestCase):
 
     def test_starts_with_do_nothing_when_empty(self):
         word = Word(1)
-        cond = word.conditions[:]
+        cond = word._conditions[:]
         word.starts_with('')
-        self.assertEqual(cond, word.conditions)
+        self.assertEqual(cond, word._conditions)
 
     def test_starts_with_appends_to_conditions(self):
         word = Word(12)
-        cond = word.conditions[:]
+        cond = word._conditions[:]
         word.starts_with('12')
-        self.assertEqual(len(cond) + 1, len(word.conditions))
+        self.assertEqual(len(cond) + 1, len(word._conditions))
 
     def test_ends_with_raises_when_bigger_than_length(self):
         word = Word(1)
@@ -61,15 +61,15 @@ class TestWord(TestCase):
 
     def test_ends_with_do_nothing_when_empty(self):
         word = Word(1)
-        cond = word.conditions[:]
+        cond = word._conditions[:]
         word.ends_with('')
-        self.assertEqual(cond, word.conditions)
+        self.assertEqual(cond, word._conditions)
 
     def test_ends_with_appends_to_conditions(self):
         word = Word(12)
-        cond = word.conditions[:]
+        cond = word._conditions[:]
         word.ends_with('12')
-        self.assertEqual(len(cond) + 1, len(word.conditions))
+        self.assertEqual(len(cond) + 1, len(word._conditions))
 
     def test_starts_with_works(self):
         params = (
@@ -85,7 +85,7 @@ class TestWord(TestCase):
         for expected, prefix in params:
             with self.subTest(f'Test starts with {prefix}'):
                 word = Word(5)
-                word.cached = DATA
+                word._cached = DATA
                 word.starts_with(prefix)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
@@ -103,14 +103,14 @@ class TestWord(TestCase):
         for expected, postfix in params:
             with self.subTest(f'Test starts with {postfix}'):
                 word = Word(5)
-                word.cached = DATA
+                word._cached = DATA
                 word.ends_with(postfix)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
 
     def test_ends_and_starts_with_works(self):
         word = Word(5)
-        word.cached = DATA
+        word._cached = DATA
         word.starts_with('АГ')
         word.ends_with('ец')
         result = word.examples(5)
@@ -120,13 +120,13 @@ class TestWord(TestCase):
         word = Word(12)
         with self.assertRaises(ValueError) as e:
             word.letter_at_index_is(-1, '2')
-        self.assertEqual(str(e.exception), "Index should be in range (0,12)")
+        self.assertEqual(str(e.exception), "Index should be in range (0, 12)")
 
     def test_letter_at_index_is_raises_when_big_index(self):
         word = Word(5)
         with self.assertRaises(ValueError) as e:
             word.letter_at_index_is(5, '2')
-        self.assertEqual(str(e.exception), "Index should be in range (0,5)")
+        self.assertEqual(str(e.exception), "Index should be in range (0, 5)")
 
     def test_letter_at_index_is_raises_when_letter_is_not_single(self):
         word = Word(12)
@@ -151,14 +151,14 @@ class TestWord(TestCase):
         for expected, index, letter in params:
             with self.subTest(f'Test letter at index {index} is {letter}'):
                 word = Word(5)
-                word.cached = DATA
+                word._cached = DATA
                 word.letter_at_index_is(index, letter)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
 
     def test_three_conditions(self):
         word = Word(5)
-        word.cached = DATA
+        word._cached = DATA
         word.starts_with('АГ')
         word.ends_with('ец')
         word.letter_at_index_is(2, 'н')
@@ -187,14 +187,14 @@ class TestWord(TestCase):
         for expected, letter in params:
             with self.subTest(f'Test contains {letter}'):
                 word = Word(5)
-                word.cached = DATA
+                word._cached = DATA
                 word.contains(letter)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
 
     def test_four_conditions(self):
         word = Word(5)
-        word.cached = DATA
+        word._cached = DATA
         word.starts_with('ё')
         word.ends_with('й')
         word.letter_at_index_is(2, 'к')
@@ -223,14 +223,14 @@ class TestWord(TestCase):
         for expected, letter in params:
             with self.subTest(f'Test contains {letter}'):
                 word = Word(5)
-                word.cached = DATA
+                word._cached = DATA
                 word.not_contains(letter)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
 
     def test_five_conditions(self):
         word = Word(5)
-        word.cached = DATA
+        word._cached = DATA
         word.starts_with('ё')
         word.ends_with('й')
         word.letter_at_index_is(2, 'к')
@@ -238,6 +238,28 @@ class TestWord(TestCase):
         word.not_contains('ф', 'а')
         result = word.examples(5)
         self.assertEqual(['ёмкий'], result)
+
+    def test_five_conditions_without_length(self):
+        word = Word()
+        word._cached = DATA
+        word.starts_with('ё')
+        word.ends_with('й')
+        word.letter_at_index_is(2, 'к')
+        word.contains('м', 'и')
+        word.not_contains('ф', 'а')
+        result = word.examples(5)
+        self.assertEqual(['ёмкий'], result)
+
+    def test_five_conditions_with_negative_length(self):
+        word = Word(-1)
+        word._cached = DATA + ['амортизация']
+        word.starts_with('а')
+        word.ends_with('я')
+        word.contains('з')
+        word.not_contains('ф', 'ж')
+        word.letter_at_index_is(1, 'м')
+        result = word.examples(5)
+        self.assertEqual(['амортизация'], result)
 
 
 if __name__ == '__main__':
