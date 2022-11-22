@@ -1,9 +1,9 @@
-from typing import List, Tuple
+from typing import List, Tuple, Callable
+
+from src.utils import read_file, Lang
 
 
 class Word:
-    RU = 'ru'
-    EN = 'en'
 
     def __init__(self, length: int = 0, ru=True):
         """
@@ -11,10 +11,10 @@ class Word:
         :param length: length of the searched word, if it less or equals to zero - word of any length will be searched
         :param ru: is lang of the dictionary to look in is Russian, will be English if False
         """
-        self._length = length if length > 0 else 0
-        self._dictionary = Word.RU if ru else Word.EN
-        self._cached = []
-        self._conditions = self._conditions = [lambda w: len(w) == self._length] if self._length else []
+        self._length: int = length if length > 0 else 0
+        self._lang: str = str(Lang.RU.value) if ru else str(Lang.EN.value)
+        self._cached: List[str] = []
+        self._conditions: List[Callable] = [lambda w: len(w) == self._length] if self._length else []
 
     def examples(self, limit: int = 1) -> List[str]:
         """
@@ -24,7 +24,7 @@ class Word:
         :return: list of string results
         """
         if not self._cached:
-            self._read_all(self._dictionary)
+            self._read_all(self._lang)
         results = self._apply_all_conditions()
         if limit <= 0:
             return results
@@ -86,9 +86,7 @@ class Word:
         pass
 
     def _read_all(self, lang: str) -> None:
-        file_name = f'./data/words_{lang}.txt'
-        with open(file_name, encoding='utf-8') as file:
-            self._cached = [e.rstrip() for e in file]
+        self._cached = read_file(lang)
 
     def _apply_all_conditions(self) -> List[str]:
         return [e for e in self._cached if all(condition(e) for condition in self._conditions)]

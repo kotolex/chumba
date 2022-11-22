@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from src.word import Word
+from src.word import Word, Lang
 
 DATA = ['ёкать', 'ёмкий', 'ёрник', 'аббат', 'абзац', 'аборт', 'абрек', 'абрис', 'авизо', 'аврал', 'автол', 'агент',
         'агнец', 'адепт', 'адрес']
@@ -11,13 +11,13 @@ class TestWord(TestCase):
         word = Word(10)
         self.assertEqual(word._cached, [])
         self.assertEqual(word._length, 10)
-        self.assertEqual(word._dictionary, Word.RU)
+        self.assertEqual(word._lang, Lang.RU.value)
 
     def test_en_dict(self):
         word = Word(10, False)
         self.assertEqual(word._cached, [])
         self.assertEqual(word._length, 10)
-        self.assertEqual(word._dictionary, Word.EN)
+        self.assertEqual(word._lang, Lang.EN.value)
 
     def test_limit(self):
         params = (
