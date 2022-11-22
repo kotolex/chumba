@@ -1,7 +1,7 @@
 from itertools import islice
 from typing import List, Tuple, Callable, Generator
 
-from src.utils import read_file, Lang
+from src.utils import read_data_file, Lang
 
 
 class Word:
@@ -93,7 +93,7 @@ class Word:
         return len(_results)
 
     def _read_all(self, lang: str) -> None:
-        self._cached = read_file(lang)
+        self._cached = read_data_file(lang)
 
     def _apply_all_conditions(self) -> Generator:
         return (e for e in self._cached if all(condition(e) for condition in self._conditions))
