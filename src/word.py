@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 
 class Word:
@@ -53,12 +53,7 @@ class Word:
         :return: None
         :raises ValueError if length of the prefix is bigger than length of the word
         """
-        if len(prefix) > self.length:
-            raise ValueError(f'Prefix {prefix} is bigger than word length({self.length})')
-        if not prefix:
-            return None
-        prefix = prefix.lower()
-        self.conditions.append(lambda w: w.startswith(prefix))
+        self._starts_ends(prefix, is_starts=True)
 
     def ends_with(self, postfix: str):
         """
@@ -67,24 +62,25 @@ class Word:
         :return: None
         :raises ValueError if length of the postfix is bigger than length of the word
         """
-        if len(postfix) > self.length:
-            raise ValueError(f'Postfix {postfix} is bigger than word length({self.length})')
-        if not postfix:
-            return None
-        postfix = postfix.lower()
-        self.conditions.append(lambda w: w.endswith(postfix))
+        self._starts_ends(postfix, is_starts=False)
 
-    def contains(self, letter: str) -> None:
+    def contains(self, *letters: str) -> None:
         """
-        Adds condition, that search word contains given letter. Letter should be a string with length=1
-        :param letter: exactly one letter
+        Adds condition, that search word contains given letters. Each letter should be a string with length=1
+        :param letters: parameters, each of this are exactly one letter
         :return: None
-        :raises ValueError if length of the letter not equal 1
+        :raises ValueError if length of some letter not equal 1
         """
-        if len(letter) != 1:
-            raise ValueError(f'Letter should have length 1, got {len(letter)}')
-        letter = letter.lower()
-        self.conditions.append(lambda w: letter in w)
+        self._contains(letters, is_contains=True)
+
+    def not_contains(self, *letters: str) -> None:
+        """
+        Adds condition, that search word not contains given letters. Each letter should be a string with length=1
+        :param letters: parameters, each of them are exactly one letter
+        :return: None
+        :raises ValueError if length of some letter not equal 1
+        """
+        self._contains(letters, is_contains=False)
 
     def examples_count(self) -> int:
         pass
@@ -96,3 +92,26 @@ class Word:
 
     def _apply_all_conditions(self) -> List[str]:
         return [e for e in self.cached if all(condition(e) for condition in self.conditions)]
+
+    def _contains(self, letters: Tuple[str], is_contains: bool = True) -> None:
+        for letter in letters:
+            if len(letter) != 1:
+                raise ValueError(f'Letter should have length 1, got {len(letter)}')
+        for letter in letters:
+            letter = letter.lower()
+            if is_contains:
+                self.conditions.append(lambda w: letter in w)
+            else:
+                self.conditions.append(lambda w: letter not in w)
+
+    def _starts_ends(self, fix: str, is_starts: bool = True) -> None:
+        fix_name = 'Prefix' if is_starts else 'Postfix'
+        if len(fix) > self.length:
+            raise ValueError(f'{fix_name} {fix} is bigger than word length({self.length})')
+        if not fix:
+            return None
+        fix = fix.lower()
+        if is_starts:
+            self.conditions.append(lambda w: w.startswith(fix))
+        else:
+            self.conditions.append(lambda w: w.endswith(fix))

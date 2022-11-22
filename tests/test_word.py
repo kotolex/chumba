@@ -196,9 +196,46 @@ class TestWord(TestCase):
         word = Word(5)
         word.cached = DATA
         word.starts_with('ё')
-        word.ends_with('ий')
+        word.ends_with('й')
         word.letter_at_index_is(2, 'к')
-        word.contains('м')
+        word.contains('м', 'и')
+        result = word.examples(5)
+        self.assertEqual(['ёмкий'], result)
+
+    def test_not_contains_raises_if_letter_is_empty(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.not_contains('')
+        self.assertEqual(str(e.exception), "Letter should have length 1, got 0")
+
+    def test_not_contains_is_raises_when_letter_is_not_single(self):
+        word = Word(12)
+        with self.assertRaises(ValueError) as e:
+            word.not_contains('22')
+        self.assertEqual(str(e.exception), "Letter should have length 1, got 2")
+
+    def test_not_contains(self):
+        params = (
+            (['ёкать', 'аббат', 'абзац', 'аборт', 'абрек'], 'и'),
+            (['ёмкий', 'ёрник', 'абзац', 'абрек', 'абрис'], 'т'),
+            (['ёмкий', 'ёрник'], 'а'),
+        )
+        for expected, letter in params:
+            with self.subTest(f'Test contains {letter}'):
+                word = Word(5)
+                word.cached = DATA
+                word.not_contains(letter)
+                result = word.examples(5)
+                self.assertEqual(expected, result)
+
+    def test_five_conditions(self):
+        word = Word(5)
+        word.cached = DATA
+        word.starts_with('ё')
+        word.ends_with('й')
+        word.letter_at_index_is(2, 'к')
+        word.contains('м', 'и')
+        word.not_contains('ф', 'а')
         result = word.examples(5)
         self.assertEqual(['ёмкий'], result)
 
