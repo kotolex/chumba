@@ -1,4 +1,5 @@
-from typing import List, Tuple, Callable
+from itertools import islice
+from typing import List, Tuple, Callable, Generator
 
 from src.utils import read_file, Lang
 
@@ -27,8 +28,8 @@ class Word:
             self._read_all(self._lang)
         results = self._apply_all_conditions()
         if limit <= 0:
-            return results
-        return results[:limit]
+            return list(results)
+        return list(islice(results, limit))
 
     def letter_at_index_is(self, index: int, letter: str) -> None:
         """
@@ -88,8 +89,8 @@ class Word:
     def _read_all(self, lang: str) -> None:
         self._cached = read_file(lang)
 
-    def _apply_all_conditions(self) -> List[str]:
-        return [e for e in self._cached if all(condition(e) for condition in self._conditions)]
+    def _apply_all_conditions(self) -> Generator:
+        return (e for e in self._cached if all(condition(e) for condition in self._conditions))
 
     def _contains(self, letters: Tuple[str], is_contains: bool = True) -> None:
         for letter in letters:
