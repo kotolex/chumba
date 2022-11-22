@@ -17,11 +17,11 @@ class Word:
         self._cached: List[str] = []
         self._conditions: List[Callable] = [lambda w: len(w) == self._length] if self._length else []
 
-    def examples(self, limit: int = 1) -> List[str]:
+    def examples(self, limit: int = 0) -> List[str]:
         """
         Returns all results matching the predefined conditions, limited if necessary by limit keyword. If limit is less
         or equal zero, then all results will be given
-        :param limit: size of the resulting list, if <=0 then all results
+        :param limit: size of the resulting list, if <= 0 then all results
         :return: list of string results
         """
         if not self._cached:
@@ -84,7 +84,13 @@ class Word:
         self._contains(letters, is_contains=False)
 
     def examples_count(self) -> int:
-        pass
+        """
+        Returns number of words, which are matched with all conditions. If there are no conditions yet, then returns
+        count of words in current dictionary
+        :return: number of found words (examples)
+        """
+        _results = self.examples(limit=-1)
+        return len(_results)
 
     def _read_all(self, lang: str) -> None:
         self._cached = read_file(lang)

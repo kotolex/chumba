@@ -261,6 +261,21 @@ class TestWord(TestCase):
         result = word.examples(5)
         self.assertEqual(['амортизация'], result)
 
+    def test_examples_count(self):
+        params = (
+            (3, 'ё'),
+            (12, 'А'),
+            (0, 'W'),
+            (15, None),
+        )
+        for expected, letter in params:
+            with self.subTest(f'Test contains {letter}'):
+                word = Word()
+                word._cached = DATA
+                if letter:
+                    word.starts_with(letter)
+                self.assertEqual(expected, word.examples_count())
+
 
 if __name__ == '__main__':
     main()
