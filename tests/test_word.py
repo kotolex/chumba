@@ -182,13 +182,14 @@ class TestWord(TestCase):
             (['ёмкий', 'ёрник', 'абрис', 'авизо'], 'и'),
             (['ёкать', 'аббат', 'аборт', 'автол', 'агент'], 'т'),
             (['ёкать', 'аббат', 'абзац', 'аборт', 'абрек'], 'а'),
+            (['ёмкий'], 'ё', 'м', 'и', 'к', 'й'),
             ([], 'w'),
         )
-        for expected, letter in params:
-            with self.subTest(f'Test contains {letter}'):
+        for expected, *letters in params:
+            with self.subTest(f'Test contains {letters}'):
                 word = Word(5)
                 word._cached = DATA
-                word.contains(letter)
+                word.contains(*letters)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
 
@@ -219,12 +220,13 @@ class TestWord(TestCase):
             (['ёкать', 'аббат', 'абзац', 'аборт', 'абрек'], 'и'),
             (['ёмкий', 'ёрник', 'абзац', 'абрек', 'абрис'], 'т'),
             (['ёмкий', 'ёрник'], 'а'),
+            ([], 'а', 'ё', 'м', 'и', 'к', 'й'),
         )
-        for expected, letter in params:
-            with self.subTest(f'Test contains {letter}'):
+        for expected, *letters in params:
+            with self.subTest(f'Test contains {letters}'):
                 word = Word(5)
                 word._cached = DATA
-                word.not_contains(letter)
+                word.not_contains(*letters)
                 result = word.examples(5)
                 self.assertEqual(expected, result)
 

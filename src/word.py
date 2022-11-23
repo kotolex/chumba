@@ -102,9 +102,9 @@ class Word:
         for letter in letters:
             letter = letter.lower()
             if is_contains:
-                self._conditions.append(lambda w: letter in w)
+                self._conditions.append(lambda w, let=letter: let in w)
             else:
-                self._conditions.append(lambda w: letter not in w)
+                self._conditions.append(lambda w, let=letter: let not in w)
 
     def _starts_ends(self, fix: str, is_starts: bool = True) -> None:
         fix_name = 'Prefix' if is_starts else 'Postfix'
