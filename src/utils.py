@@ -1,6 +1,7 @@
 from enum import Enum
+from itertools import islice
 from pathlib import Path
-from typing import List, Union
+from typing import List, Union, Generator, Any
 
 
 class Lang(Enum):
@@ -17,3 +18,9 @@ def read_data_file(lang: str, encoding='utf-8') -> List[str]:
 def read_file(file_name: Union[Path, str], encoding='utf-8') -> List[str]:
     with open(file_name, encoding=encoding) as file:
         return list(file)
+
+
+def from_generator(gen: Union[Generator, reversed], limit: int) -> List[Any]:
+    if limit <= 0:
+        return list(gen)
+    return list(islice(gen, limit))

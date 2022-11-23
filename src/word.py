@@ -1,19 +1,18 @@
-from itertools import islice
 from typing import List, Tuple, Callable, Generator
 
-from src.utils import read_data_file, Lang
+from src.utils import from_generator, read_data_file, Lang
 
 
 class Word:
 
-    def __init__(self, length: int = 0, ru=True):
+    def __init__(self, length: int = 0, is_ru=True):
         """
         Create instance of word wrapper - a tool to search for word in dictionaries with various conditions.
         :param length: length of the searched word, if it less or equals to zero - word of any length will be searched
-        :param ru: is lang of the dictionary to look in is Russian, will be English if False
+        :param is_ru: is lang of the dictionary to look in is Russian, will be English if False
         """
         self._length: int = length if length > 0 else 0
-        self._lang: str = str(Lang.RU.value) if ru else str(Lang.EN.value)
+        self._lang: str = str(Lang.RU.value) if is_ru else str(Lang.EN.value)
         self._cached: List[str] = []
         self._conditions: List[Callable] = [lambda w: len(w) == self._length] if self._length else []
 
@@ -27,9 +26,7 @@ class Word:
         if not self._cached:
             self._read_all(self._lang)
         results = self._apply_all_conditions()
-        if limit <= 0:
-            return list(results)
-        return list(islice(results, limit))
+        return from_generator(results, limit)
 
     def letter_at_index_is(self, index: int, letter: str) -> None:
         """
@@ -113,10 +110,9 @@ class Word:
         fix_name = 'Prefix' if is_starts else 'Postfix'
         if 0 < self._length < len(fix):
             raise ValueError(f'{fix_name} {fix} is bigger than word length({self._length})')
-        if not fix:
-            return None
-        fix = fix.lower()
-        if is_starts:
-            self._conditions.append(lambda w: w.startswith(fix))
-        else:
-            self._conditions.append(lambda w: w.endswith(fix))
+        if fix:
+            fix = fix.lower()
+            if is_starts:
+                self._conditions.append(lambda w: w.startswith(fix))
+            else:
+                self._conditions.append(lambda w: w.endswith(fix))
