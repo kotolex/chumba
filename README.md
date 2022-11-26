@@ -1,4 +1,4 @@
-# words_advisor
+# Chumba
 
 TODO 
 1) docs (readme)

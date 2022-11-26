@@ -1,10 +1,10 @@
 [project]
-name = "text"
+name = "chumba"
 version = "0.0.1"
 authors = [
   { name="kotolex", email="lexman2@yandex.ru" },
 ]
-description = "Useful tools to work with texts"
+description = "Useful set of tools to work with texts"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
