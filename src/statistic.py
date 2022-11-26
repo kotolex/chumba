@@ -2,7 +2,7 @@ import re
 from collections import Counter
 from typing import List, Tuple
 
-from .utils import from_generator
+from src.utils import from_generator
 
 
 class Statistics:

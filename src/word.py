@@ -1,6 +1,6 @@
 from typing import List, Tuple, Callable, Generator
 
-from .utils import from_generator, read_data_file, Lang
+from src.utils import from_generator, read_data_file, Lang
 
 
 class Word:
