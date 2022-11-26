@@ -1,0 +1,18 @@
+[project]
+name = "text"
+version = "0.0.1"
+authors = [
+  { name="kotolex", email="lexman2@yandex.ru" },
+]
+description = "Useful tools to work with texts"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/kotolex/text"
+"Bug Tracker" = "https://github.com/kotolex/text/issues"
