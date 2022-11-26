@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from src.word import Word, Lang
+from src.chumba.word import Word, Lang
 
 DATA = ['ёкать', 'ёмкий', 'ёрник', 'аббат', 'абзац', 'аборт', 'абрек', 'абрис', 'авизо', 'аврал', 'автол', 'агент',
         'агнец', 'адепт', 'адрес']

@@ -1,4 +1,4 @@
-from src.statistic import Statistics
+from src.chumba.statistic import Statistics
 from unittest import TestCase, main
 
 TEXT = """

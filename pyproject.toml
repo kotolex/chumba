@@ -1,6 +1,10 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "chumba"
-version = "0.0.1"
+version = "0.0.4"
 authors = [
   { name="kotolex", email="lexman2@yandex.ru" },
 ]
@@ -14,5 +18,11 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/kotolex/text"
-"Bug Tracker" = "https://github.com/kotolex/text/issues"
+"Homepage" = "https://github.com/kotolex/chumba"
+"Bug Tracker" = "https://github.com/kotolex/chumba/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"chumba.data" = ["*.txt"]
